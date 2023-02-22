@@ -22,10 +22,14 @@ export class NotesController {
   async findAll(@Query() query: FindAllQueryDto) {
     const { offset = 0, limit = 10, search = "" } = query;
 
-    const searchQuery: FilterQuery<NoteDocument> = {};
+    let searchQuery: FilterQuery<NoteDocument> = {};
     if (search) {
-      searchQuery.title = new RegExp(search, "i");
-      searchQuery.note = new RegExp(search, "i");
+      searchQuery = {
+        $or: [
+          { title: { $regex: search, $options: "xi" } },
+          { note: { $regex: search, $options: "xi" } },
+        ],
+      };
     }
 
     return await this.notesService.findAll(
