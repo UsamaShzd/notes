@@ -6,34 +6,55 @@ import {
   Param,
   Post,
   Put,
+  Query,
 } from "@nestjs/common";
 import { CreateNoteDto } from "./dto/create-note.dto";
+import { FindAllQueryDto } from "./dto/find-all-query.dto";
 import { UpdateNoteDto } from "./dto/update-note.dto";
+import { NotesService } from "./notes.service";
+import { FilterQuery } from "mongoose";
+import { NoteDocument } from "./schemas/Note.schema";
 
 @Controller("notes")
 export class NotesController {
+  constructor(private readonly notesService: NotesService) {}
   @Get()
-  findAll() {
-    return [];
+  async findAll(@Query() query: FindAllQueryDto) {
+    const { offset = 0, limit = 10, search = "" } = query;
+
+    const searchQuery: FilterQuery<NoteDocument> = {};
+    if (search) {
+      searchQuery.title = new RegExp(search, "i");
+      searchQuery.note = new RegExp(search, "i");
+    }
+
+    return await this.notesService.findAll(
+      searchQuery,
+      offset || 0,
+      limit || 10,
+    );
   }
 
   @Get(":id")
-  findOne(@Param("id") id: string) {
-    return id;
+  async findOne(@Param("id") id: string) {
+    return await this.notesService.findById(id);
   }
 
   @Post()
-  create(@Body() createNoteDto: CreateNoteDto) {
-    return createNoteDto;
+  async create(@Body() createNoteDto: CreateNoteDto) {
+    const note = await this.notesService.create(createNoteDto);
+    return note;
   }
 
-  @Put()
-  update(@Body() updateNoteDto: UpdateNoteDto) {
-    return updateNoteDto;
+  @Put(":id")
+  async update(@Param("id") id: string, @Body() updateNoteDto: UpdateNoteDto) {
+    const note = await this.notesService.update(id, updateNoteDto);
+    return note;
   }
 
   @Delete(":id")
-  remove(@Param("id") id: string) {
-    return id;
+  async remove(@Param("id") id: string) {
+    const note = await this.notesService.delete(id);
+    return note;
   }
 }

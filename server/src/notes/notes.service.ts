@@ -11,8 +11,15 @@ export class NotesService {
     @InjectModel(Note.name) private readonly noteModel: Model<NoteDocument>,
   ) {}
 
+  private throwNoteNotFound(id: string) {
+    throw new NotFoundException(`Note #${id} was not found.`);
+  }
+
   findById(id: string) {
-    return this.noteModel.findById(id);
+    const note = this.noteModel.findById(id);
+    if (!note) {
+      this.throwNoteNotFound(id);
+    }
   }
 
   findAll(query: FilterQuery<NoteDocument>, skip = 0, limit = 10) {
@@ -29,8 +36,8 @@ export class NotesService {
       new: true,
     });
 
-    if (updated) {
-      throw new NotFoundException(`Note #${id} was not found.`);
+    if (!updated) {
+      this.throwNoteNotFound(id);
     }
 
     return updated;
