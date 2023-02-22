@@ -9,7 +9,7 @@ export class Note {
   title: string;
 
   @Prop()
-  note: number;
+  note: string;
 
   @Prop()
   indexed: boolean;
