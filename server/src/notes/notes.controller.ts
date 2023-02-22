@@ -13,7 +13,7 @@ import { FindAllQueryDto } from "./dto/find-all-query.dto";
 import { UpdateNoteDto } from "./dto/update-note.dto";
 import { NotesService } from "./notes.service";
 import { FilterQuery } from "mongoose";
-import { NoteDocument } from "./schemas/Note.schema";
+import { NoteDocument } from "./schemas/note.schema";
 
 @Controller("notes")
 export class NotesController {

@@ -1,7 +1,7 @@
 import { Model, FilterQuery } from "mongoose";
 import { Injectable, NotFoundException } from "@nestjs/common";
 import { InjectModel } from "@nestjs/mongoose";
-import { Note, NoteDocument } from "./schemas/Note.schema";
+import { Note, NoteDocument } from "./schemas/note.schema";
 import { CreateNoteDto } from "./dto/create-note.dto";
 import { UpdateNoteDto } from "./dto/update-note.dto";
 
