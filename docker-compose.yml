@@ -20,7 +20,7 @@ services:
       - ./server:/app
     environment:
       - NODE_ENV=development
-      - MONGODB_URI=mongodb://mongo:27017/mydb
+      - MONGO_DB_URL=mongodb://localhost:27017/NotesDB
     depends_on:
       - mongo
 
