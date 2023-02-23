@@ -3,6 +3,7 @@ import Container from "react-bootstrap/Container";
 import Form from "react-bootstrap/Form";
 import Navbar from "react-bootstrap/Navbar";
 import Button from "react-bootstrap/Button";
+import Link from "next/link";
 
 function Header() {
   return (
@@ -12,7 +13,9 @@ function Header() {
           Notes
         </Navbar.Brand>
         <Nav>
-          <Button variant="outline-light">+ Add Note</Button>
+          <Link href="/add">
+            <Button variant="outline-light">+ Add Note</Button>
+          </Link>
         </Nav>
       </Container>
     </Navbar>
