@@ -91,7 +91,7 @@ function Home() {
 
   return (
     <div className="container">
-      <div className="mb-2 d-flex justify-content-between">
+      <div className="mb-3 d-flex justify-content-between">
         <h2>Notes</h2>
         <Form.Control
           type="search"
