@@ -19,7 +19,7 @@ function NoteCard({ note, handleIndex, handleDelete }: NoteCardProps) {
           {note.note}
         </Card.Text>
         <div className="d-flex justify-content-end">
-          <Link href={`/${note._id}`}>
+          <Link href={`/update/${note._id}`}>
             <Button variant="outline-primary">Edit</Button>
           </Link>
           <Button

@@ -1,15 +1,116 @@
+import type Note from "@/types/Note";
 import NoteCard from "@/components/NoteCard";
+import { useEffect, useState, useCallback, useRef } from "react";
+import { useRouter } from "next/router";
+import apiService from "@/services/api";
+import Paginated from "@/types/Paginated";
+import Pagination from "react-bootstrap/Pagination";
+import getPageCount from "@/helpers/getPageCount";
+import Form from "react-bootstrap/Form";
+
+const limit = 10;
+
+type PageQueryParams = {
+  page: number;
+  search: string;
+};
 
 function Home() {
+  const router = useRouter();
+  const [, setLoading] = useState(false);
+  const [notes, setNotes] = useState<Note[]>([]);
+  const [totalCount, setTotalCount] = useState(0);
+
+  const loadNotes = useCallback(
+    async (queryParams: PageQueryParams, abortSignal: AbortSignal) => {
+      try {
+        const page = queryParams.page ? queryParams.page : 1;
+        setLoading(true);
+
+        const params = { offset: (page - 1) * 10, limit, search: "" };
+        if (queryParams.search) {
+          params.search = queryParams.search || "";
+        }
+
+        const res = await apiService.get<Paginated<Note>>("/notes", {
+          signal: abortSignal,
+          params,
+        });
+
+        setTotalCount(res.data.totalCount);
+        setNotes(res.data.list);
+      } catch (err) {
+      } finally {
+        setLoading(false);
+      }
+    },
+    [],
+  );
+
+  useEffect(() => {
+    const abortController = new AbortController();
+    const page = router.query.page ? parseInt(router.query.page as string) : 1;
+    const search = (router.query.search as string) || "";
+    loadNotes({ page, search }, abortController.signal);
+    return () => {
+      abortController.abort();
+    };
+  }, [router.query, loadNotes]);
+
+  const replaceQueryParams = useCallback(
+    (params: { [key: string]: string | number | undefined }) => {
+      router.replace({
+        query: { ...router.query, ...params },
+      });
+    },
+    [router],
+  );
+
+  const renderPagination = useCallback(() => {
+    const items = [];
+
+    for (let i = 0; i < getPageCount(totalCount, limit); ++i) {
+      const pageNum = i + 1;
+      items.push(
+        <Pagination.Item
+          key={`page-btn${pageNum}`}
+          onClick={() => {
+            replaceQueryParams({ page: pageNum });
+          }}
+        >
+          {pageNum}
+        </Pagination.Item>,
+      );
+    }
+    return (
+      <div style={{ marginTop: "50px" }}>
+        <Pagination>{items}</Pagination>
+      </div>
+    );
+  }, [replaceQueryParams, totalCount]);
+
   return (
     <div className="container">
-      <NoteCard
-        note={{
-          _id: "_id",
-          title: "Note Title",
-          note: "It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout. The point of using Lorem Ipsum is that it has a more-or-less normal distribution of letters, as opposed to using 'Content here, content here', making it look like readable English. Many desktop publishing packages and web page editors now use Lorem Ipsum as their default model text, and a search for 'lorem ipsum' will uncover many web sites still in their infancy. Various versions have evolved over the years, sometimes by accident, sometimes on purpose (injected humour and the like).",
-        }}
-      />
+      <div className="mb-2 d-flex justify-content-between">
+        <h2>Notes</h2>
+        <Form.Control
+          type="search"
+          placeholder="Search"
+          aria-label="Search"
+          style={{ width: "200px" }}
+          onChange={(e) => {
+            replaceQueryParams({ search: e.target.value });
+          }}
+        />
+      </div>
+      {notes.map((n) => {
+        return (
+          <div className="mb-3" key={n._id}>
+            <NoteCard note={n} />
+          </div>
+        );
+      })}
+      {renderPagination()}
     </div>
   );
 }
