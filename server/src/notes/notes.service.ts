@@ -20,6 +20,11 @@ export class NotesService {
     if (!note) {
       this.throwNoteNotFound(id);
     }
+    return note;
+  }
+
+  count(query: FilterQuery<NoteDocument> = {}) {
+    return this.noteModel.find(query).count;
   }
 
   findAll(query: FilterQuery<NoteDocument>, skip = 0, limit = 10) {

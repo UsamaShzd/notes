@@ -32,11 +32,14 @@ export class NotesController {
       };
     }
 
-    return await this.notesService.findAll(
-      searchQuery,
-      offset || 0,
-      limit || 10,
-    );
+    const list = await this.notesService.findAll(searchQuery, offset, limit);
+
+    const totalCount = await this.notesService.findAll(searchQuery);
+
+    return {
+      list,
+      totalCount,
+    };
   }
 
   @Get(":id")
