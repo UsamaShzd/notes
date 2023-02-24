@@ -13,6 +13,12 @@ export class Note {
 
   @Prop()
   indexed: boolean;
+
+  @Prop()
+  created_at: Date;
+
+  @Prop()
+  updated_at: Date;
 }
 
 export const NoteSchema = SchemaFactory.createForClass(Note);

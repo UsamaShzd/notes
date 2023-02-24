@@ -32,14 +32,22 @@ export class NotesService {
   }
 
   create(note: CreateNoteDto) {
-    const newNote = new this.noteModel(note);
+    const newNote = new this.noteModel({
+      ...note,
+      created_at: new Date(),
+      updated_at: new Date(),
+    });
     return newNote.save();
   }
 
   async update(id: string, note: UpdateNoteDto) {
-    const updated = await this.noteModel.findByIdAndUpdate(id, note, {
-      new: true,
-    });
+    const updated = await this.noteModel.findByIdAndUpdate(
+      id,
+      { ...note, updated_at: new Date() },
+      {
+        new: true,
+      },
+    );
 
     if (!updated) {
       this.throwNoteNotFound(id);

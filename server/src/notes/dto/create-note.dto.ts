@@ -1,4 +1,10 @@
-import { IsString, MinLength, MaxLength } from "class-validator";
+import {
+  IsString,
+  MinLength,
+  MaxLength,
+  IsBoolean,
+  IsOptional,
+} from "class-validator";
 
 export class CreateNoteDto {
   @IsString()
@@ -10,4 +16,8 @@ export class CreateNoteDto {
   @MinLength(20, { message: "Note must be at least 20 characters long." })
   @MaxLength(300, { message: "Note Must not be greater than 300 characters." })
   readonly note: string;
+
+  @IsBoolean()
+  @IsOptional()
+  readonly indexed: boolean;
 }
