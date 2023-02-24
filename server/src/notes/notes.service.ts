@@ -1,4 +1,4 @@
-import { Model, FilterQuery } from "mongoose";
+import { Model, FilterQuery, SortOrder, SortValues } from "mongoose";
 import { Injectable, NotFoundException } from "@nestjs/common";
 import { InjectModel } from "@nestjs/mongoose";
 import { Note, NoteDocument } from "./schemas/note.schema";
@@ -27,8 +27,13 @@ export class NotesService {
     return this.noteModel.find(query).count;
   }
 
-  findAll(query: FilterQuery<NoteDocument>, skip = 0, limit = 10) {
-    return this.noteModel.find(query).skip(skip).limit(limit);
+  findAll(
+    query: FilterQuery<NoteDocument>,
+    skip = 0,
+    limit = 10,
+    sort: string | { [key: string]: SortOrder } = {},
+  ) {
+    return this.noteModel.find(query).sort(sort).skip(skip).limit(limit);
   }
 
   create(note: CreateNoteDto) {

@@ -32,7 +32,9 @@ export class NotesController {
       };
     }
 
-    const list = await this.notesService.findAll(searchQuery, offset, limit);
+    const list = await this.notesService.findAll(searchQuery, offset, limit, {
+      updated_at: -1,
+    });
 
     const totalCount = await this.notesService.findAll(searchQuery);
 
@@ -55,6 +57,15 @@ export class NotesController {
 
   @Put(":id")
   async update(@Param("id") id: string, @Body() updateNoteDto: UpdateNoteDto) {
+    const note = await this.notesService.update(id, updateNoteDto);
+    return note;
+  }
+
+  @Put("/index/:id")
+  async index(
+    @Param("id") id: string,
+    @Body() updateNoteDto: { indexed: boolean },
+  ) {
     const note = await this.notesService.update(id, updateNoteDto);
     return note;
   }

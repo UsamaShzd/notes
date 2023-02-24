@@ -57,6 +57,40 @@ function Home() {
     };
   }, [router.query, loadNotes]);
 
+  const handleDelete = async (noteId: string) => {
+    const confirm = window.confirm(
+      "Are you sure you want to delete this note?",
+    );
+    if (!confirm) return;
+
+    const _notes = [...notes];
+    const noteIndex = _notes.findIndex((n) => n._id === noteId);
+    if (noteIndex === -1) return;
+
+    _notes.splice(noteIndex, 1);
+    setNotes(_notes);
+    try {
+      await apiService.delete<Note>("/notes/" + noteId);
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  const handleIndex = async (noteId: string) => {
+    const _notes = [...notes];
+    const noteIndex = _notes.findIndex((n) => n._id === noteId);
+    if (noteIndex === -1) return;
+
+    _notes[noteIndex].indexed = !_notes[noteIndex].indexed;
+    setNotes(_notes);
+
+    try {
+      await apiService.put("/notes/index/" + noteId, {
+        indexed: _notes[noteIndex].indexed,
+      });
+    } catch (err) {}
+  };
+
   const replaceQueryParams = useCallback(
     (params: { [key: string]: string | number | undefined }) => {
       router.replace({
@@ -106,7 +140,11 @@ function Home() {
       {notes.map((n) => {
         return (
           <div className="mb-3" key={n._id}>
-            <NoteCard note={n} />
+            <NoteCard
+              note={n}
+              handleDelete={() => handleDelete(n._id)}
+              handleIndex={() => handleIndex(n._id)}
+            />
           </div>
         );
       })}
